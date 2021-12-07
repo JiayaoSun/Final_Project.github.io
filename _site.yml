@@ -1,0 +1,17 @@
+name: "Final_project"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "Data Visualization"
+      href: ./Data Visualization.html
+    - text: "Data Analysis"
+      href: 
+    - text: "Project"
+      href: 
+    - icon: fa-github fa-lg
+      href: https://github.com/JiayaoSun
+
+output:
+  html_document:
+    theme: yeti

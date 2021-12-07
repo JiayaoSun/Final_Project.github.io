@@ -1,0 +1,28 @@
+---
+title: "//TITLE//"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+** find a picture
+
+** brief introduction
+
+# Motivation
+
+** motivation
+
+# Data Source
+
+** data
+
+# Website Navigation
+
+** list
+
+** video
+
+# Contributors
+
+name

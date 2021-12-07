@@ -1,0 +1,39 @@
+---
+title: "Data Visualization"
+output:
+  html_notebook:
+    toc: true
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+library(plotly)
+library(dplyr)
+```
+
+## Bar chart on race and sex
+
+```{r bar chart}
+race_sex_df = Shooting_df %>%
+  subset(vic_sex == "M" | vic_sex == "F")
+  group_by(vic_sex,vic_race) %>% 
+  summarise(count = n()) %>% 
+  pivot_wider(names_from = vic_race, values_from = count)
+racesex_bar = 
+  plot_ly(x = ~vic_race, y = ~, type = 'bar', name = 'SF Zoo') %>% 
+  
+  add_trace(y = ~LA_Zoo, name = 'LA Zoo')
+fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
+  
+  
+
+
+
+```
+
+
+```{r }
+
+```
+
