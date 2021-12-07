@@ -28,6 +28,6 @@ Shooting_df = bind_rows(history_df, year_to_date_df) %>%
 ## sex
 
 ```{r sex}
-res1 = aov( ~ factor(ind), data = new_data)
+res1 = aov(number_shoot ~ factor(sex), data = new_data)
 summary(res1)
 ```
