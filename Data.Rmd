@@ -1,5 +1,5 @@
 ---
-title: "Data"
+title: "Data For Visualization"
 output: html_document
 ---
 
@@ -7,6 +7,7 @@ output: html_document
 library(tidyverse)
 library(ggplot2)
 library(dplyr)
+library(zoo)
 ```
 
 ## Clean the Data
@@ -34,4 +35,58 @@ Shooting_df = bind_rows(history_df, year_to_date_df) %>%
 
 ```
 
+## race_sex_vicdf
+
+```{r race_sex_vicdf}
+race_sex_vicdf = Shooting_df %>%
+  subset(vic_sex == "M" | vic_sex == "F") %>% 
+  group_by(vic_sex,vic_race) %>% 
+  summarise(count = n()) %>% 
+  pivot_wider(names_from = vic_sex, values_from = count) %>% 
+  subset(vic_race != 'UNKNOWN')
+```
+
+## race_sex_perpdf
+```{r race_sex_perpdf}
+race_sex_perpdf = Shooting_df %>%
+  subset(perp_sex == "M" | perp_sex == "F") %>% 
+  group_by(perp_sex,perp_race) %>% 
+  summarise(count = n()) %>% 
+  pivot_wider(names_from = perp_sex, values_from = count) %>% 
+  subset(perp_race != 'UNKNOWN')
+```
+
+## boro_df
+
+```{r boro_df}
+boro_df = Shooting_df %>%
+  group_by(boro) %>% 
+  summarise(count = n())
+```
+
+
+## location_df
+
+```{r location_df}
+location_df = Shooting_df %>%
+  mutate_all(list(~na_if(.,""))) %>%
+  drop_na(location_desc) %>% 
+  group_by(location_desc) %>% 
+  summarise(count = n()) %>% 
+  subset(count >= 10)
+```
+
+
+## year_trend_df_2020
+
+```{r}
+year_trend_df_2020 = Shooting_df %>%
+  group_by(year, boro) %>%
+  mutate(
+    boro = factor(boro)
+  ) %>% 
+  summarise(count = n()) %>% 
+  subset(year != '2021')
+  
+```
 

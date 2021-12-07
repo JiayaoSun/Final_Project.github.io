@@ -1,39 +1,122 @@
 ---
 title: "Data Visualization"
 output:
+  html_document:
+    toc: yes
+    df_print: paged
   html_notebook:
-    toc: true
-editor_options: 
+    toc: yes
+editor_options:
   chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
 library(plotly)
 library(dplyr)
+library(viridis)
+library(gganimate)
+library(ggmap)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+knitr::opts_chunk$set(
+  fig.width = 8,
+  fig.height = 6,
+  out.width = "90%",
+  message = FALSE,
+  warning = FALSE,
+  error = FALSE
+)
+
+options(
+  ggplot2.continuous.color = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_color_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
 ```
 
-## Bar chart on race and sex
+# Bar chart on race and sex
+
+From the bar chart we can see most victims in NYC shooting cases from 2006 until now are male in Black. Broadly, Male victims outweigh Female victims in all races.
 
 ```{r bar chart}
-race_sex_df = Shooting_df %>%
-  subset(vic_sex == "M" | vic_sex == "F")
-  group_by(vic_sex,vic_race) %>% 
-  summarise(count = n()) %>% 
-  pivot_wider(names_from = vic_race, values_from = count)
 racesex_bar = 
-  plot_ly(x = ~vic_race, y = ~, type = 'bar', name = 'SF Zoo') %>% 
-  
-  add_trace(y = ~LA_Zoo, name = 'LA Zoo')
-fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'stack')
-  
-  
+  plot_ly(race_sex_vicdf, x = ~vic_race, y = ~F, type = 'bar', name = 'Female', alpha = 0.7) %>% 
+  add_trace(y = ~M, name = 'Male') %>% 
+  layout(yaxis = list(title = 'Count'), barmode = 'stack') %>% 
+  layout(title = "Race and SEX (Victims)",
+         xaxis = list(title = ""))
+racesex_bar
+```
 
+The bar chart of sex and race distribution of Perpetrators is similar to that of Victims. We can see most Perpetrators in NYC shooting cases from 2006 until now are male in Black. Broadly, Male Perpetrators outweigh Female Perpetrators in all races.
 
-
+```{r bar chart perp}
+racesex_bar = 
+  plot_ly(race_sex_perpdf, x = ~perp_race, y = ~F, type = 'bar', name = 'Female', alpha = 0.7) %>% 
+  add_trace(y = ~M, name = 'Male') %>% 
+  layout(yaxis = list(title = 'Count'), barmode = 'stack') %>% 
+  layout(title = "Race and SEX (Perpetrators)",
+         xaxis = list(title = ""))
+racesex_bar
 ```
 
 
-```{r }
+# Shooting cases by Borough
 
+The Borough bar chart shows that Brooklyn area has the most shooting cases(more than 10k) and Staten Island has the least shooting cases(less than 1k) in NYC.
+
+```{r Borough}
+boro_bar = boro_df %>% 
+  mutate(boro = fct_reorder(boro, count)) %>% 
+  plot_ly(x = ~boro, y = ~count, color = ~boro, type = "bar", colors = "viridis", alpha = 0.8) %>% 
+    layout(
+      title = "Shooting cases by Borough",
+      xaxis = list(title = "Borough")
+      )
+boro_bar
 ```
+
+
+
+
+# Shooting cases by location(Common)
+
+Cases with unrecorded location are dropped. Locations where shootings happened less than 10 times from 2006 until now are dropped.The bar chart only analyzes common locations that exist shooting cases those years. We can see from the chart that public houses, apartment buildings and private houses are top 3 locations that shooting cases may happen.
+
+```{r location}
+location_bar = location_df %>% 
+  mutate(location_desc = fct_reorder(location_desc, count)) %>% 
+  plot_ly(x = ~location_desc, y = ~count, color = ~location_desc, type = "bar", colors = "viridis", alpha = 0.8) %>% 
+    layout(
+      title = "Shooting cases by location (common)",
+      xaxis = list(title = "location")
+      )
+location_bar
+```
+
+
+
+# Shooting Cases Trend before 2021 by Borough
+
+The line plot shows the trend of shooting cases in NYC by Borough before 2021, because data in 2021 is only until the end of sepetember. Obviously, the change of year did not affect the shooting cases' distribution among boroughs. Even though shooting rate decreased dramatically since 2014, there was a steep rise in 2020, which probably was resulted from the emergency of COVID-19.
+
+```{r Shooting Cases Trend before 2020, echo=FALSE, fig.align='center'}
+trend_plot = ggplot(year_trend_df_2020, aes(x = year, y = count, col = factor(boro))) + 
+  geom_line(size = 1) + 
+  geom_point(size = 2) + 
+  labs(title = "Shooting Cases Trend before 2021",
+       subtitle = 'Year: {as.integer(frame_along)}', 
+       y = "Total cases per year") +
+  theme(axis.text.x = element_text(angle = 45)) +
+  theme(plot.title = element_text(hjust = 0.5, size = 12)) +
+  scale_x_continuous(breaks = seq(from = 2006, to = 2020, by = 1)) +
+  transition_reveal(year) 
+trend_plot
+```
+
+
+
 

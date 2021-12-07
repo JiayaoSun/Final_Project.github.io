@@ -11,7 +11,7 @@
 
 
 
-<title>Data</title>
+<title>Data For Visualization</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -249,6 +249,8 @@ $(document).ready(function () {
         <li>
   <a href="./Data Visualization.html">Data Visualization</a>
 </li>
+<li class="dropdown-header">Data Analysis</li>
+<li class="dropdown-header">Project</li>
 <li>
   <a href="https://github.com/JiayaoSun">
     <span class="fa fa-github fa-lg"></span>
@@ -264,7 +266,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Data</h1>
+<h1 class="title toc-ignore">Data For Visualization</h1>
 
 </div>
 
@@ -276,7 +278,63 @@ $(document).ready(function () {
 year_to_date_df = read.csv(&#39;year_to_date.csv&#39;) %&gt;% 
   rename(Lon_Lat = New.Georeferenced.Column)</code></pre>
 <pre class="r"><code>Shooting_df = bind_rows(history_df, year_to_date_df) %&gt;% 
-  janitor::clean_names() </code></pre>
+  janitor::clean_names() %&gt;% 
+  separate(occur_date, c(&quot;month&quot;,&quot;day&quot;,&quot;year&quot;)) %&gt;% 
+  separate(occur_time, c(&quot;hour&quot;,&quot;minute&quot;,&quot;second&quot;)) %&gt;% 
+  mutate(
+    year = as.numeric(year), 
+    month = as.numeric(month),
+    day = as.numeric(day),
+    hour = as.numeric(hour),
+    minute = as.numeric(minute)
+    ) %&gt;% 
+  select(-second)</code></pre>
+</div>
+<div id="race_sex_vicdf" class="section level2">
+<h2>race_sex_vicdf</h2>
+<pre class="r"><code>race_sex_vicdf = Shooting_df %&gt;%
+  subset(vic_sex == &quot;M&quot; | vic_sex == &quot;F&quot;) %&gt;% 
+  group_by(vic_sex,vic_race) %&gt;% 
+  summarise(count = n()) %&gt;% 
+  pivot_wider(names_from = vic_sex, values_from = count) %&gt;% 
+  subset(vic_race != &#39;UNKNOWN&#39;)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;vic_sex&#39;. You can override using the `.groups` argument.</code></pre>
+</div>
+<div id="race_sex_perpdf" class="section level2">
+<h2>race_sex_perpdf</h2>
+<pre class="r"><code>race_sex_perpdf = Shooting_df %&gt;%
+  subset(perp_sex == &quot;M&quot; | perp_sex == &quot;F&quot;) %&gt;% 
+  group_by(perp_sex,perp_race) %&gt;% 
+  summarise(count = n()) %&gt;% 
+  pivot_wider(names_from = perp_sex, values_from = count) %&gt;% 
+  subset(perp_race != &#39;UNKNOWN&#39;)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;perp_sex&#39;. You can override using the `.groups` argument.</code></pre>
+</div>
+<div id="boro_df" class="section level2">
+<h2>boro_df</h2>
+<pre class="r"><code>boro_df = Shooting_df %&gt;%
+  group_by(boro) %&gt;% 
+  summarise(count = n())</code></pre>
+</div>
+<div id="location_df" class="section level2">
+<h2>location_df</h2>
+<pre class="r"><code>location_df = Shooting_df %&gt;%
+  mutate_all(list(~na_if(.,&quot;&quot;))) %&gt;%
+  drop_na(location_desc) %&gt;% 
+  group_by(location_desc) %&gt;% 
+  summarise(count = n()) %&gt;% 
+  subset(count &gt;= 10)</code></pre>
+</div>
+<div id="year_trend_df_2020" class="section level2">
+<h2>year_trend_df_2020</h2>
+<pre class="r"><code>year_trend_df_2020 = Shooting_df %&gt;%
+  group_by(year, boro) %&gt;%
+  mutate(
+    boro = factor(boro)
+  ) %&gt;% 
+  summarise(count = n()) %&gt;% 
+  subset(year != &#39;2021&#39;)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
 </div>
 
 
