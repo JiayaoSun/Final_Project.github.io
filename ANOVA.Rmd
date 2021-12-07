@@ -1,0 +1,33 @@
+---
+title: "ANOVA"
+output: html_document
+---
+```{r import data}
+history_df = read.csv('historic.csv')
+
+year_to_date_df = read.csv('year_to_date.csv') %>% 
+  rename(Lon_Lat = New.Georeferenced.Column)
+```
+
+```{r data cleaning}
+Shooting_df = bind_rows(history_df, year_to_date_df) %>% 
+  janitor::clean_names() %>% 
+  separate(occur_date, c("month","day","year")) %>% 
+  separate(occur_time, c("hour","minute","second")) %>% 
+  mutate(
+    year = as.numeric(year), 
+    month = as.numeric(month),
+    day = as.numeric(day),
+    hour = as.numeric(hour),
+    minute = as.numeric(minute)
+    ) %>% 
+  select(-second)
+
+```
+
+## sex
+
+```{r sex}
+res1 = aov( ~ factor(ind), data = new_data)
+summary(res1)
+```

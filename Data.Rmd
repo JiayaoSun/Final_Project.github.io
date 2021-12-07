@@ -44,6 +44,7 @@ race_sex_vicdf = Shooting_df %>%
   summarise(count = n()) %>% 
   pivot_wider(names_from = vic_sex, values_from = count) %>% 
   subset(vic_race != 'UNKNOWN')
+
 ```
 
 ## race_sex_perpdf

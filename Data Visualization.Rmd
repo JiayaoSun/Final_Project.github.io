@@ -1,11 +1,11 @@
 ---
 title: "Data Visualization"
 output:
+  html_notebook:
+    toc: yes
   html_document:
     toc: yes
     df_print: paged
-  html_notebook:
-    toc: yes
 editor_options:
   chunk_output_type: inline
 ---
@@ -16,6 +16,8 @@ library(dplyr)
 library(viridis)
 library(gganimate)
 library(ggmap)
+library(png)
+library(gifski)
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 knitr::opts_chunk$set(
@@ -103,7 +105,7 @@ location_bar
 
 The line plot shows the trend of shooting cases in NYC by Borough before 2021, because data in 2021 is only until the end of sepetember. Obviously, the change of year did not affect the shooting cases' distribution among boroughs. Even though shooting rate decreased dramatically since 2014, there was a steep rise in 2020, which probably was resulted from the emergency of COVID-19.
 
-```{r Shooting Cases Trend before 2020, echo=FALSE, fig.align='center'}
+```{r Shooting Cases Trend before 2020, result =FALSE, fig.align='center'}
 trend_plot = ggplot(year_trend_df_2020, aes(x = year, y = count, col = factor(boro))) + 
   geom_line(size = 1) + 
   geom_point(size = 2) + 
@@ -114,8 +116,12 @@ trend_plot = ggplot(year_trend_df_2020, aes(x = year, y = count, col = factor(bo
   theme(plot.title = element_text(hjust = 0.5, size = 12)) +
   scale_x_continuous(breaks = seq(from = 2006, to = 2020, by = 1)) +
   transition_reveal(year) 
-trend_plot
+
+anim_save("trend_plot.gif", trend_plot)
+![](trend_plot.gif)
 ```
+
+
 
 
 
